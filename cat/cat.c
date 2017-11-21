@@ -13,8 +13,9 @@ main(int argc,char *argv[]){
 	int i;
 
 	if(argc < 2){//引数が指定されてない場合(1個目はコマンド名なので" < 2 ")
-		fprintf(stderr, "%s：filename is not given\n", argv[0]);//argv[0]はプログラム名
-		exit(1);
+		do_cat(0);
+		// fprintf(stderr, "%s：filename is not given\n", argv[0]);//argv[0]はプログラム名
+		// exit(1);
 	}
 	//1番目の引数から順番にdo_catを実行していく
 	for(i=1;i<argc;i++){
@@ -32,12 +33,15 @@ do_cat(const char *path){
 	int n;
 
 	//指定したパスのファイルを開く(ストリームを作る)
-	fd = open(path,O_RDONLY);
-	if(fd < 0) die(path);
-
+	if(path == 0){
+		fd = STDIN_FILENO;
+	}else{
+		fd = open(path,O_RDONLY);
+	}
 	//ファイルを読んで、標準出力に書き出す
 	for(;;){
 		n = read(fd,buf,sizeof buf);
+		//if(n < 0) die(path);
 		if(n < 0) die(path);
 		if(n == 0) break;
 		if((write(STDOUT_FILENO,buf,n) < 0))die(path);
