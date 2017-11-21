@@ -33,11 +33,13 @@ do_cat(const char *path){
 	int n;
 
 	//指定したパスのファイルを開く(ストリームを作る)
+	fd = open(path,O_RDONLY);
+	
+	//コマンド引数が与えられなかった場合の処理
 	if(path == 0){
-		fd = STDIN_FILENO;
-	}else{
-		fd = open(path,O_RDONLY);
+		fd = STDIN_FILENO;//fd(ファイルディスクリプた)を上書き
 	}
+
 	//ファイルを読んで、標準出力に書き出す
 	for(;;){
 		n = read(fd,buf,sizeof buf);
@@ -56,6 +58,3 @@ die(const char *s){
 	perror(s);
 	exit(1);
 }
-
-
-
