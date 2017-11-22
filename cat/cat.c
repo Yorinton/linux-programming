@@ -14,8 +14,6 @@ main(int argc,char *argv[]){
 
 	if(argc < 2){//引数が指定されてない場合(1個目はコマンド名なので" < 2 ")
 		do_cat(0);
-		// fprintf(stderr, "%s：filename is not given\n", argv[0]);//argv[0]はプログラム名
-		// exit(1);
 	}
 	//1番目の引数から順番にdo_catを実行していく
 	for(i=1;i<argc;i++){

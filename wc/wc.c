@@ -5,7 +5,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
-static int do_wc(const char *path);
+static void do_wc(int fd, const char *path);
 static void die(const char *s);
 
 int
@@ -18,43 +18,37 @@ main(int argc,char *argv[]){
 	}
 
 	for(i=1;i < argc;i++){
-		int count = do_wc(argv[i]);
-		// int *p_co = &count;
-		printf("行数：%d\n",count);
-		count = 0;
+		char *path = argv[i];
+		int fd = open(path,O_RDONLY);
+		if(fd < 0) die(path);
+		do_wc(fd,argv[i]);
+		if(close(fd) < 0) die(path);
 	}
-
 	exit(0);
 }
 
 #define BUFFER_SIZE 2048
 
-static int
-do_wc(const char *path){
-	int fd;//ファイルディスクリプタ
-	unsigned char buf[BUFFER_SIZE];//BUFFER_SIZEはchar型配列の要素数
-	int n;
+static void
+do_wc(int fd,const char *path){
+	unsigned long count = 0;
 
-	fd = open(path,O_RDONLY);
-
-	int count = 0;
 	for(;;){
-		n = read(fd,buf,sizeof buf);
+
+		unsigned char buf[BUFFER_SIZE];//BUFFER_SIZEはchar型配列の要素数
+
+		int n = read(fd,buf,sizeof buf);
 		if(n < 0) die(path);
 		if(n == 0) break;
 
-		int i;
+		unsigned long i;
 		for(i=0;i<BUFFER_SIZE;i++){
-			// printf("%p\n",buf);
 			if(buf[i] == '\n'){//bufはポインタ、buf[i]はchar
 				count++;
 			}
 		}
 	}
-
-	if(close(fd)<0)die(path);
-
-	return count + 1;
+	printf("行数：%lu\n", count);
 
 }
 
